@@ -1,3 +1,5 @@
+05-MAR-2018 Pair programming @alastair.ayliffe & @AniaMakes
+
 # React Cinema
 
 Let's revisit our first project where we built a movie search engine using the Open Movie Database. This time we want to implement it using React. It should be a Single Page App, that is all the functionality should be on a single page, rather switch between multiple pages.
