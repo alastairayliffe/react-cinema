@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from './Button';
+import FilmOverview from "./FilmOverview";
 
 const omdbKey = 'd09805b1';
 
@@ -7,11 +8,15 @@ class App extends React.Component {
   constructor(){
     super();
 
-    this.state = {searchTerm:""};
+    this.state = {
+      searchTerm:"",
+      searchArray:[]};
     this.onValueChange = this.onValueChange.bind(this);
     this.searchForFilms = this.searchForFilms.bind(this);
+    this.searchIndividualFilm = this.searchIndividualFilm.bind(this);
 
   }
+
 
   onValueChange(event){
     this.setState({searchTerm: event.target.value})
@@ -19,15 +24,20 @@ class App extends React.Component {
 
   searchForFilms(event){
     let searchingFor = this.state.searchTerm;
-    console.log(omdbKey);
     let url = `http://www.omdbapi.com/?s=${searchingFor}&apikey=${omdbKey}`;
     let filmCollectionPromise = this.filmApi(url);
-    console.log(filmCollectionPromise);
-    Promise.all([filmCollectionPromise]).then(function(values){
-      console.log(values);
+    filmCollectionPromise.then(filmArray => {
+      this.setState({searchArray : filmArray});
     })
+  }
 
-
+  searchIndividualFilm(imdbID){
+    let url = `http://www.omdbapi.com/?i=${imdbID}&apikey=${omdbKey}`;
+    let filmIndividualPromise = this.filmApi(url);
+    filmIndividualPromise.then(film => {
+      this.setState({individualFilm: film});
+      console.log(film);
+    })
   }
 
   filmApi(url){
@@ -41,12 +51,27 @@ class App extends React.Component {
 
 
   render(){
+
+    let movieList = this.state.searchArray.map(function(movie){
+        return <FilmOverview
+          title={movie.Title}
+          poster={movie.Poster}
+          year={movie.Year}
+          type={movie.Type}
+          imdbID={movie.imdbID}
+          key={movie.imdbID}
+          fetchDetailsFunction = {this.searchIndividualFilm}
+        />
+    });
+
+
     return (
       <div>
         <form>
         <input type="text" name="searchValue" onChange={this.onValueChange} />
         <button type="button" name="submit" onClick={this.searchForFilms} />
         </form>
+        {movieList}
       </div>
     )
   }
